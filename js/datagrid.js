@@ -263,7 +263,7 @@ $.fn.TransGrid = function(options){
                 appends += '<td width="24" style="text-align:center;">+</td>';
                 $.each(settings.insert_field,function(kk,vv){
                     $.each(vv,function(vk,vvv){
-                        if(vvv == 'text'){
+                        if(vvv == 'varchar'){
                             appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
                         }else if(vvv =='radio'){
                             appends += '<td><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;';

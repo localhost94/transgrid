@@ -40,7 +40,14 @@ Class TransGrid {
             $fields = '*';
         }
         if(is_array($this->CONF['insert_field']) && count($this->CONF['insert_field']) > 0){
-            $insert_field = implode(',',$this->CONF['insert_field']);
+            $list = array();
+            $res = $T->dbQuery('SELECT column_name, data_type, character_maximum_length,is_nullable FROM information_schema.columns WHERE table_name = \''.$this->CONF['table'].'\'  ORDER BY table_schema, table_name');
+            while ($row = $T->dbFetchAssoc($res)) {
+                if(in_array($row['column_name'], $this->CONF['insert_field'])){
+                    $list[] = '{'.$row['column_name'].':\''. $row['data_type'].'\'}';
+                }
+            }
+            $insert_field = '['.implode(',',$list).']';
         }else{
             $insert_field = '';
         }
@@ -59,10 +66,10 @@ Class TransGrid {
         }
         $res = '<link type="text/css" href="'.$this->base_url.$this->path.'css/qshe.css" rel="stylesheet" />';
         $res .= '<script src="'.$this->base_url.$this->path.'js/datagrid.js"></script>';
-        $res .= '<div id="TransGrid"></div>';
+        $res .= '<div id="ThisIsGrid"></div>';
         $res .= '<script>';
         $res .= '$(document).ready(function(){
-                    $("#TransGrid").TransGrid({
+                    $("#ThisIsGrid").TransGrid({
                         data:"table='.$this->CONF['table'].'&limit='.$this->CONF['limit'].'&field='.$fields.'&primary_key='.$this->CONF['primary_key'].'&status_field='.$this->CONF['status_field'].'",
                         url:"'.$this->base_url.$this->path.'handle.php?action=load",
                         editable : '.$this->CONF['editable'].',
@@ -73,7 +80,7 @@ Class TransGrid {
                         url_edit: "'.$this->base_url.$this->path.'handle.php?action=edit&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'",  
                         url_delete: "'.$this->base_url.$this->path.'handle.php?action=delete&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'&status_field='.$this->CONF['status_field'].'",
                         url_insert: "'.$this->base_url.$this->path.'handle.php?action=addnew&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'",
-                        insert_field : "'.$insert_field.'",
+                        insert_field : '.$insert_field.',
                         tablehead : '.$tablehead.'    
                     });
                 });';
