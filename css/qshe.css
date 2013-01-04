@@ -1,0 +1,70 @@
+/* 
+    Document   : qshe
+    Created on : Dec 27, 2012, 10:56:16 AM
+    Author     : AG
+    Description:
+        Purpose of the stylesheet follows.
+*/
+.btn{
+    behavior: url(border-radius.htc);
+    border-radius: 14px;
+    padding:4px 15px;
+    background: #DFDFDF url('../img/newbtn_middle.png') repeat-x;
+    color:#3e3e3e;
+    text-shadow: 1px 1px white;
+    border:1px solid #DFDFDF;
+    cursor:pointer;
+}
+.btn-mini{
+    behavior: url(border-radius.htc);
+    border-radius: 14px;
+    padding:3px 12px;
+    background: #EDEDED url('../img/newbtn_middle.png') repeat-x;
+    color:#3e3e3e;
+    border:1px solid #DFDFDF;
+    cursor:pointer;
+    display:inline-block;
+    vertical-align: middle;
+}
+.btn-new{
+    content:'';
+    background:url('../img/add.png')no-repeat;
+    display:inline-block;
+    width:15px;
+    height:15px;
+    margin:auto 0px;
+}
+.btn-disable{
+    color:#AAA !important;
+}
+.btn-enable{
+    color:#222 !important;
+}
+.btn:hover{
+    background: #EDEDED url('../img/newbtn_middle.png') repeat-x;
+}
+.table-explorer{
+    margin-top:10px;
+    margin-bottom: 10px;
+    width:100%;
+    border-spacing:0;
+    color:#3e3e3e;
+    border-collapse:collapse;   
+}
+
+.table-explorer th{
+    border-bottom: 1px solid #CCC;
+    text-align: left;
+    background: #EEE;
+    cursor: pointer;
+    padding:5px;
+    font-weight: bold;
+}
+.table-explorer th:hover{
+    background: #DDD;
+}
+.table-explorer td{
+    text-align: left;
+    padding:5px;
+    border-bottom: 1px dotted #CCC;
+}
