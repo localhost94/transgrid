@@ -1,0 +1,20 @@
+<?php
+$mainTitle = 'QSHE Setting &raquo; GMP Area Audit';
+include 'modules/setting/t.setting.leftmenu.php';
+include 't.header.php';
+include 'libs/TransGrid/transgrid.php';
+$Grid = new TransGrid();
+
+$CONF['table']          = 't_qshe_setting_area_audit';
+$CONF['editable']       = true;
+$CONF['field']          = array('area_id','area_name','area_desc','area_status');
+$CONF['primary_key']    = 'area_id';
+$CONF['limit']          = 20;
+$CONF['edit_field']     = array('area_name','area_desc','area_status');
+$CONF['insert_field']   = array('area_name','area_desc','area_status');
+$CONF['status_field']   = 'area_status';
+$CONF['tablehead']      = array('Area Name','Area Description','Status');
+$CONF['title']          = 'QSHE Setting &raquo; GMP Area Audit';
+echo $Grid->CreateGrid($CONF);
+include 't.footer.php';
+$T->stop();
