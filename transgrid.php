@@ -66,6 +66,7 @@ Class TransGrid {
                         data:"table='.$this->CONF['table'].'&limit='.$this->CONF['limit'].'&field='.$fields.'&primary_key='.$this->CONF['primary_key'].'&status_field='.$this->CONF['status_field'].'",
                         url:"'.$this->base_url.$this->path.'handle.php?action=load",
                         editable : '.$this->CONF['editable'].',
+                        limit : '.$this->CONF['limit'].',    
                         total_data : '.$total_data.',
                         title : "'.$this->CONF['title'].'",
                         pkey: "'.$this->CONF['primary_key'].'",

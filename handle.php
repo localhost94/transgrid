@@ -20,17 +20,32 @@ switch(@$_GET['action']){
     case 'edit':
         $_POST['edit_by'] = $_SESSION['user_id'];
         $_POST['edit_date'] = date('Y-m-d H:i:s');
-        $T->dbUpdate($_GET['table'], $_POST,'WHERE '.$_GET['primary_key'].' = \''.$_POST[$_GET['primary_key']].'\'');
+        $exe = $T->dbUpdate($_GET['table'], $_POST,'WHERE '.$_GET['primary_key'].' = \''.$_POST[$_GET['primary_key']].'\'');
+        if($exe){
+            echo 'success';
+        }else{
+            echo 'error';
+        }
         break;
     case 'addnew':
         $_POST['entry_by'] = $_SESSION['user_id'];
         $_POST['entry_date'] = date('Y-m-d H:i:s');
         $_POST[$_GET['primary_key']] = $T->getId();
-        $T->dbInsert($_GET['table'], $_POST);
+        $exe = $T->dbInsert($_GET['table'], $_POST);
+        if($exe){
+            echo 'success';
+        }else{
+            echo 'error';
+        }
         break;
     case 'delete':
         $datas[$_GET['status_field']] = 'd';
-        $T->dbUpdate($_GET['table'], $datas,'WHERE  '.$_GET['primary_key'].' = \''.$_POST[$_GET['primary_key']].'\'');
+        $exe = $T->dbUpdate($_GET['table'], $datas,'WHERE  '.$_GET['primary_key'].' = \''.$_POST[$_GET['primary_key']].'\'');
+        if($exe){
+            echo 'success';
+        }else{
+            echo 'error';
+        }
         break;
 }
 

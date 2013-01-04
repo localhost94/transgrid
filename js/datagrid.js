@@ -226,19 +226,19 @@ $.fn.TransGrid = function(options){
             +pesan+
             '</div>';
             $('body').prepend(str);
-            setTimeout('$(\'#theTrueMsg\').remove();',1000);
+            setTimeout('$(\'#theTrueMsg\').remove();',2000);
         }else if(tipe == 'error'){
             str = '<div id="theTrueMsg" onclick="javascript:$(\'#theTrueMsg\').remove();" title="Click to close" style="background-image: url(images/status_warning.gif);background-repeat : no-repeat;background-position: 5px 1px;position:absolute;left:200px;right:200px;padding:10px 10px 10px 45px;" class="ui-widget ui-state-error ui-corner-bottom">'
             +pesan+
             '</div>';
             $('body').prepend(str);
-            setTimeout('$(\'#theTrueMsg\').remove();',1000);
+            setTimeout('$(\'#theTrueMsg\').remove();',2000);
         }else if(tipe == 'loading'){
             str = '<div id="theTrueMsg" onclick="javascript:$(\'#theTrueMsg\').remove();" title="Click to close" style="background-image: url(images/ajax-loader.gif);background-repeat : no-repeat;background-position: 5px 1px;position:absolute;left:200px;right:200px;padding:10px 10px 10px 45px;" class="ui-widget ui-widget-content ui-corner-bottom">'
             +pesan+
             '</div>';
             $('body').prepend(str);
-            setTimeout('$(\'#theTrueMsg\').remove();',1000);
+            setTimeout('$(\'#theTrueMsg\').remove();',2000);
         }
     }
     function remove_element(eId){
@@ -352,7 +352,12 @@ $.fn.TransGrid = function(options){
                 type:'post',
                 url:settings.url_delete,
                 data:settings.pkey+'='+id,
-                success:function(){
+                success:function(res){
+                    if(res == 'success'){
+                        WriteStatus('success','Data has been successfully deleted');
+                    }else{
+                        WriteStatus('error','Failed while deleting data from database');
+                    }
                     Tgridreload(pages);
                 }
             });
@@ -390,7 +395,12 @@ $.fn.TransGrid = function(options){
             type:'post',
             url: settings.url_edit,
             data:fields,
-            success:function(){
+            success:function(res){
+                if(res == 'success'){
+                    WriteStatus('success','Data has been successfully Saved');
+                }else{
+                    WriteStatus('error','Failed while saving data in to database');
+                }
                 Tgridreload(pages);
                 $('#SaveGrid').removeClass('btn-enable');
                 $('#SaveGrid').addClass('btn-disable');
