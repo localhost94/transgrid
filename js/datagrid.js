@@ -19,6 +19,8 @@ $.fn.TransGrid = function(options){
         edit_field:'',
         insert_field:'',
         status_field:'',
+        base_url :'',
+        path:'',
         limit:20,
         total_data:0,
         width:'100%',
@@ -68,7 +70,7 @@ $.fn.TransGrid = function(options){
                     respon += '<a class="btn-enable" id="AddTGrid" href="#" data-page="'+page+'" style="padding:3px;display:inline-block;">+ Add New</a>';
                     respon += '&nbsp;&nbsp;<a class="btn-disable" id="SaveGrid" href="#" data-id="" data-op="none" data-page="'+page+'" style="padding:3px;display:inline-block;">&radic; Save</a>';
                     respon += '<span style="position:absolute;right:0px;margin:auto 5px;">';
-                    respon += 'Filter: <input type="text" id="searchkey" style="width:200px;height:12px;" placeholder="Search" value="'+settings.keyword+'">';
+                    respon += '<img src="'+settings.base_url+settings.path+'img/find.png" align="left">&nbsp; Filter: <input type="text" id="searchkey" style="width:200px;height:12px;" placeholder="Search" value="'+settings.keyword+'">';
                     respon += '</span>';
                     respon += '</div>';
                 }

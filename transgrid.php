@@ -148,6 +148,8 @@ Class TransGrid {
                         insert_field : '.$insert_field.',
                         edit_field : '.$edit_field.',
                         tablehead : '.$tablehead.',
+                        base_url : "'.$this->base_url.'",    
+                        path : "'.$this->path.'",    
                         status_field: "'.$this->CONF['status_field'].'"    
                     });
                 });';
