@@ -155,26 +155,53 @@ $.fn.TransGrid = function(options){
                                     respon +=' </span>';
                                     if(settings.editable==true){
                                         respon += '<span style="display:none;" id="edit'+editId+'" class="editData">';
-                                        if($.inArray(ii, array_field) >= 0){
-                                            if(ii == settings.status_field || values == 'y' && values == 'n'){
-                                                //respon += '<select id="'+editId+'" name="'+ii+'" style="width:98%;" onclick="return false;">';
-                                                respon += '<input type="radio" name="'+editId+'_'+ii+'" value="y"';
-                                                if(values == 'y'){
-                                                    respon += ' checked="checked"';
+                                        $.each(settings.edit_field,function(kk,vv){
+                                            if($.inArray(ii,vv)){
+                                            $.each(vv,function(vk,vvv){
+                                                if(ii == vk){
+                                                    if(vvv == 'varchar'){
+                                                        respon += '<input type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
+                                                    }else if(vvv == 'text'){
+                                                        respon += '<textarea name="'+vk+'" style="width:98%;height:40px">'+values+'</textarea>';
+                                                    }else if(vvv == 'date'){
+                                                        respon += '<input class="datepickers" name="'+vk+'" style="width:98%;height:40px" value="'+values+'">';
+                                                    }else if(vvv == 'datetime'){
+                                                        respon += '<input class="datetimepickers" name="'+vk+'" style="width:98%;height:40px" value="'+values+'">';
+                                                    }else if(vvv == 'int' || vvv == 'bigint'){
+                                                        respon += '<input class="integerInput" type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
+                                                    }else if(vvv =='radio'){
+                                                        respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
+                                                        if(values == 'y'){
+                                                            respon += ' checked="checked"'
+                                                        }    
+                                                        respon += '> Active&nbsp;';
+                                                        respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
+                                                        if(values == 'n'){
+                                                            respon += ' checked="checked"'
+                                                        } 
+                                                        respon += '> Not Active';
+                                                    }else if(vvv == 'selectYear'){
+                                                        var currentTime = new Date()
+                                                        var year = currentTime.getFullYear()
+                                                        var nextYear = parseInt(year) + 5;
+                                                        respon += '<select name="'+vk+'">';
+                                                        for(i=year;i<=nextYear;i++){
+                                                            respon += '<option value="'+i+'"'
+                                                            if(i == values){
+                                                                respon += ' selected="selected"';
+                                                            }    
+                                                            respon += '>'+i+'</option>';
+                                                        }
+                                                        respon += '</select>';
+                                                    }else{
+                                                        respon += '<input type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
+                                                    }
                                                 }
-                                                respon += '>Active</option>';
-                                                respon += '<input type="radio" name="'+editId+'_'+ii+'" value="n"';
-                                                if(values == 'n'){
-                                                    respon += ' checked="checked"';
-                                                }
-                                                respon += '>Not Active</option>';
-                                            //respon += '</select>';
+                                            });
                                             }else{
-                                                respon += '<input type="text" name="'+ii+'" id="'+editId+'" style="width:98%" value="'+values+'">';
+                                                respon += values;
                                             }
-                                        }else{
-                                            respon += values;
-                                        }
+                                        });
                                         respon += '</span>';
                                     }
                                     respon += '</td>';
@@ -283,8 +310,10 @@ $.fn.TransGrid = function(options){
                             appends += '<td><textarea name="'+vk+'" style="width:98%;height:40px"></textarea></td>';
                         }else if(vvv == 'date'){
                             appends += '<td><input class="datepickers" name="'+vk+'" style="width:98%;height:40px"></td>';
+                        }else if(vvv == 'datetime'){
+                            appends += '<td><input class="datetimepickers" name="'+vk+'" style="width:98%;height:40px"></td>';
                         }else if(vvv == 'int' || vvv == 'bigint'){
-                            appends += '<td><input class="integerInput" type="text" name="'+vk+'" style="width:98%;" onkeyup="if(isNaN(this.value)){ return false; }"></td>';
+                            appends += '<td><input class="integerInput" type="text" name="'+vk+'" style="width:98%;"></td>';
                         }else if(vvv =='radio'){
                             appends += '<td><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;';
                             appends += '<input type="radio" name="'+vk+'" value="n"> Not Active</td>';
@@ -302,25 +331,6 @@ $.fn.TransGrid = function(options){
                                 appends += '>'+i+'</option>';
                             }
                             appends += '</select></td>';
-                        }else if(vvv == 'selectDept'){
-                            appends += '<td>';
-                            appends += '<select name="'+vk+'">';
-                            appends += '<option value="DLMI">Corporate</option>';
-                            appends += '<option value="DLMI_OPS">Operation</option>';
-                            appends += '<option value="DLMI_OPS_MNF">Manufacture</option>';
-                            appends += '<option value="DLMI_OPS_MNF_MLR">MLR</option>';
-                            appends += '<option value="DLMI_OPS_MNF_CHP">Chilled</option>';
-                            appends += '<option value="DLMI_OPS_MNF_UHT">UHT</option>';
-                            appends += '<option value="DLMI_OPS_MNF_STM">STM</option>';
-                            appends += '<option value="DLMI_OPS_MNF_PWD">Powder</option>';
-                            appends += '<option value="DLMI_QCS">QC & SHE</option>';
-                            appends += '<option value="DLMI_QCS_QC">QC</option>';
-                            appends += '<option value="DLMI_QCS_SHE">SHE</option>';
-                            appends += '<option value="DLMI_CI">Continuous Improvement</option>';
-                            appends += '<option value="DLMI_PUR">Purchasing</option>';
-                            appends += '<option value="DLMI_IT">IT</option>';
-                            appends += '<option value="DLMI_MAC">Management Accountant</option>';
-                            appends += '</select></td>';
                         }else{
                             appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
                         }
@@ -329,9 +339,9 @@ $.fn.TransGrid = function(options){
                 appends += '<td width="24"></td>';
                 appends += '</tr>';
             }
+            $("#AddTGrid").html('&times; Cancel');
             $("#TransGrid").append(appends);
             bind_datepicker();
-            $("#AddTGrid").html('&times; Cancel');
         }
     });
     
@@ -495,6 +505,7 @@ $.fn.TransGrid = function(options){
     });
     function bind_datepicker()
     {
-        $("input.datepickers").datepicker({dateFormat: 'yy-mm-dd'});
+        $("input.datepickers").datepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
+        $("input.datetimepickers").datetimepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
     }
 };

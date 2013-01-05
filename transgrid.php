@@ -54,7 +54,62 @@ Class TransGrid {
             }
             $insert_field = '['.implode(',',$list).']';
         }else{
-            $insert_field = '';
+            $list = array();
+            $res = $T->dbQuery('SELECT column_name, data_type, character_maximum_length,is_nullable FROM information_schema.columns WHERE table_name = \''.$this->CONF['table'].'\'  ORDER BY table_schema, table_name');
+            while ($row = $T->dbFetchAssoc($res)) {
+                if(is_array($this->CONF['field'])){
+                    if(in_array($row['column_name'], $this->CONF['insert_field'])){
+                        if($row['column_name'] == $this->CONF['status_field']){
+                            $list[] = '{'.$row['column_name'].':\'radio\'}';
+                        }else{
+                            $list[] = '{'.$row['column_name'].':\''. $row['data_type'].'\'}';
+                        }
+                    }
+                }else{
+                    if($row['column_name'] == $this->CONF['status_field']){
+                        $list[] = '{'.$row['column_name'].':\'radio\'}';
+                    }else{
+                        $list[] = '{'.$row['column_name'].':\''. $row['data_type'].'\'}';
+                    }
+                }
+            }
+            $insert_field = '['.implode(',',$list).']';
+        }
+        if(is_array($this->CONF['edit_field']) && count($this->CONF['edit_field']) > 0){
+            $list = array();
+            $res = $T->dbQuery('SELECT column_name, data_type, character_maximum_length,is_nullable FROM information_schema.columns WHERE table_name = \''.$this->CONF['table'].'\'  ORDER BY table_schema, table_name');
+            while ($row = $T->dbFetchAssoc($res)) {
+                if(in_array($row['column_name'], $this->CONF['edit_field'])){
+                    if($row['column_name'] == $this->CONF['status_field']){
+                        $list[] = '{'.$row['column_name'].':\'radio\'}';
+                    }else{
+                        $list[] = '{'.$row['column_name'].':\''. $row['data_type'].'\'}';
+                    }
+                    
+                }
+            }
+            $edit_field = '['.implode(',',$list).']';
+        }else{
+            $list = array();
+            $res = $T->dbQuery('SELECT column_name, data_type, character_maximum_length,is_nullable FROM information_schema.columns WHERE table_name = \''.$this->CONF['table'].'\'  ORDER BY table_schema, table_name');
+            while ($row = $T->dbFetchAssoc($res)) {
+                if(is_array($this->CONF['field'])){
+                    if(in_array($row['column_name'], $this->CONF['insert_field'])){
+                        if($row['column_name'] == $this->CONF['status_field']){
+                            $list[] = '{'.$row['column_name'].':\'radio\'}';
+                        }else{
+                            $list[] = '{'.$row['column_name'].':\''. $row['data_type'].'\'}';
+                        }
+                    }
+                }else{
+                    if($row['column_name'] == $this->CONF['status_field']){
+                        $list[] = '{'.$row['column_name'].':\'radio\'}';
+                    }else{
+                        $list[] = '{'.$row['column_name'].':\''. $row['data_type'].'\'}';
+                    }
+                }
+            }
+            $edit_field = '['.implode(',',$list).']';
         }
         if(is_array($this->CONF['tablehead']) && count($this->CONF['tablehead']) > 0){
             $tablehead = json_encode($this->CONF['tablehead']);
@@ -86,6 +141,7 @@ Class TransGrid {
                         url_delete: "'.$this->base_url.$this->path.'handle.php?action=delete&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'&status_field='.$this->CONF['status_field'].'",
                         url_insert: "'.$this->base_url.$this->path.'handle.php?action=addnew&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'",
                         insert_field : '.$insert_field.',
+                        edit_field : '.$edit_field.',
                         tablehead : '.$tablehead.',
                         status_field: "'.$this->CONF['status_field'].'"    
                     });
