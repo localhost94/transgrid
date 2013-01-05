@@ -19,8 +19,12 @@ switch(@$_GET['action']){
         foreach($arr_field as $key){
             $additionalSQL[] = ' '.$key.' LIKE \'%'.$_POST['keyword'].'%\' ';
         }
-        $where = ' AND ('.implode(' OR ',$additionalSQL).') ';
-        $data = $T->dbRecordList($_POST['table'],$_POST['field'],' WHERE '.$_POST['status_field'].' != \'d\' '.$where,'','',$offset.','.$_POST['limit'],$_POST['primary_key']);
+        if($_POST['status_field'] == ''){
+            $where = 'WHERE '.implode(' OR ',$additionalSQL);
+        }else{
+            $where = ' WHERE '.$_POST['status_field'].' != \'d\' AND  ('.implode(' OR ',$additionalSQL).') ';
+        }
+        $data = $T->dbRecordList($_POST['table'],$_POST['field'],$where,'','',$offset.','.$_POST['limit'],$_POST['primary_key']);
         echo json_encode($data);
         break;
     case 'edit':

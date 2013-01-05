@@ -150,11 +150,13 @@ $.fn.TransGrid = function(options){
                             $.each(vals,function(ii,values){
                                 if(ii != settings.pkey){
                                     respon += '<td><span id="'+viewClass+editId+'" class="viewData">';
-                                    if(ii == settings.status_field || values == 'y' || values == 'n'){
+                                    if(ii == settings.status_field || values == 'y' || values == 'n' || values == 'd'){
                                         if(values == 'y'){
                                             respon += 'Active';
-                                        }else{
+                                        }else if(values == 'n'){
                                             respon += 'Not Active';
+                                        }else if(values == 'd'){
+                                            respon += 'Deleted';
                                         }
                                     }else{
                                         respon += values;

@@ -119,13 +119,13 @@ Class TransGrid {
         if(is_array($this->CONF['tablehead']) && count($this->CONF['tablehead']) > 0){
             $tablehead = json_encode($this->CONF['tablehead']);
         }else{
-            $tablehead = '';
+            $tablehead = '[]';
         }
         if(!isset($this->CONF['primary_key']) || $this->CONF['primary_key'] == ''){
             $query = $T->dbQuery("SELECT column_name
                     FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
                     WHERE OBJECTPROPERTY(OBJECT_ID(constraint_name), 'IsPrimaryKey') = 1
-                    AND table_name = '".$_POST['table']."'");
+                    AND table_name = '".$this->CONF['table']."'");
             $pkey   = $T->dbFetchArray($query);
             $this->CONF['primary_key'] = $pkey[0];
         }
