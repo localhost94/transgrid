@@ -59,6 +59,10 @@
     cursor: pointer;
     padding:5px;
     font-weight: bold;
+    border-right:1px solid #CCC;
+}
+.table-explorer th:last-child{
+    border-right: 0;
 }
 .table-explorer th:hover{
     background: #DDD;
@@ -66,5 +70,9 @@
 .table-explorer td{
     text-align: left;
     padding:5px;
-    border-bottom: 1px dotted #CCC;
+    border-bottom: 1px solid #CCC;
+    border-right:1px solid #CCC;
+}
+.table-explorer td:last-child{
+    border-right: 0;
 }

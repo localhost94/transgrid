@@ -18,6 +18,7 @@ $.fn.TransGrid = function(options){
         url_insert:'',
         edit_field:'',
         insert_field:'',
+        status_field:'',
         limit:20,
         total_data:0,
         width:'100%',
@@ -63,7 +64,7 @@ $.fn.TransGrid = function(options){
                     respon += '<div class="ui-widget-content" style="padding:2px;background:#F2F6F8;border-bottom:0;">';
                     respon += '<span style="width:4px;border-right:1.8px dotted #AAA;">&nbsp;</span> &nbsp;';
                     respon += '<a class="btn-enable" id="AddTGrid" href="#" data-page="'+page+'" style="padding:3px;display:inline-block;">+ Add New</a>';
-                    respon += '&nbsp;&nbsp;<a class="btn-disable" id="SaveGrid" href="#" data-id="" data-page="'+page+'" style="padding:3px;display:inline-block;">&radic; Save</a>';
+                    respon += '&nbsp;&nbsp;<a class="btn-disable" id="SaveGrid" href="#" data-id="" data-op="none" data-page="'+page+'" style="padding:3px;display:inline-block;">&radic; Save</a>';
                     respon += '</div>';
                 }
                 
@@ -142,7 +143,7 @@ $.fn.TransGrid = function(options){
                             $.each(vals,function(ii,values){
                                 if(ii != settings.pkey){
                                     respon += '<td><span id="'+viewClass+editId+'" class="viewData">';
-                                    if(values == 'y' || values == 'n'){
+                                    if(ii == settings.status_field || values == 'y' || values == 'n'){
                                         if(values == 'y'){
                                             respon += 'Active';
                                         }else{
@@ -155,9 +156,7 @@ $.fn.TransGrid = function(options){
                                     if(settings.editable==true){
                                         respon += '<span style="display:none;" id="edit'+editId+'" class="editData">';
                                         if($.inArray(ii, array_field) >= 0){
-                                            if(values != 'y' && values != 'n'){
-                                                respon += '<input type="text" name="'+ii+'" id="'+editId+'" style="width:98%" value="'+values+'">';
-                                            }else{
+                                            if(ii == settings.status_field || values == 'y' && values == 'n'){
                                                 //respon += '<select id="'+editId+'" name="'+ii+'" style="width:98%;" onclick="return false;">';
                                                 respon += '<input type="radio" name="'+editId+'_'+ii+'" value="y"';
                                                 if(values == 'y'){
@@ -170,7 +169,8 @@ $.fn.TransGrid = function(options){
                                                 }
                                                 respon += '>Not Active</option>';
                                             //respon += '</select>';
-                                       
+                                            }else{
+                                                respon += '<input type="text" name="'+ii+'" id="'+editId+'" style="width:98%" value="'+values+'">';
                                             }
                                         }else{
                                             respon += values;
@@ -190,23 +190,27 @@ $.fn.TransGrid = function(options){
                     respon += '</table>';
                     respon +='<table class="table-explorer" style="width:'+settings.width+';margin:0px;">';
                     respon +='<tr>';
-                    respon +='<th>';
+                    respon +='<th style="border-right:0;font-weight:normal;">';
                     respon += 'Page: '+page+' of '+tot_page;
                     respon += '&nbsp;<a href="#" style="text-decoration:none;color:#3e3e3e;padding:3px 10px;" ';
                     if(page > 1){
                         var prev = parseInt(page) - 1;
                         respon += ' class="Treload" data-id="'+prev+'"';
+                    }else{
+                        respon += ' class="btn-disable" ';
                     }    
                     respon += '>&laquo; Prev</a>';
                     respon += '<a href="#" style="text-decoration:none;color:#3e3e3e;padding:3px 10px;" ';
                     if(page < tot_page){
                         var next = parseInt(page) + 1;
                         respon += ' class="Treload" data-id="'+next+'"';
-                    }    
+                    }else{
+                        respon += ' class="btn-disable" ';
+                    }      
                     respon += '>Next &raquo;</a>';
                     respon += '';
                     respon +='</th>';
-                    respon +='<th style="text-align:right;">';
+                    respon +='<th style="text-align:right;font-weight:normal;">';
                     var urutan = Math.ceil((page - 1) * settings.limit) + 1;
                     respon +='Displaying '+urutan+' - '+(no - 1)+' of '+settings.total_data;
                     respon +='</th>';
@@ -251,20 +255,36 @@ $.fn.TransGrid = function(options){
     $("#AddTGrid").live('click',function(){
         if ($("#SaveNewGrid").length > 0){
             $("#SaveNewGrid").remove();
+            $("#SaveGrid").attr('data-op','none');
+            $('#SaveGrid').removeClass('btn-enable');
+            $('#SaveGrid').addClass('btn-disable');
             $("#AddTGrid").html('+ Add New');
         }else{
+            
             var pages = $(this).attr('data-page');
             var appends = '';
             if(settings.tablehead == '' || settings.insert_field == ''){
                 alert('insert_field or tablehead not define');
                 $("#AddTGrid").html('+ Add New');
+                $("#SaveGrid").attr('data-op','none');
+                $('#SaveGrid').removeClass('btn-enable');
+                $('#SaveGrid').addClass('btn-disable');
             }else{
+                $('#SaveGrid').removeClass('btn-disable');
+                $('#SaveGrid').addClass('btn-enable');
+                $('#SaveGrid').attr('data-op','addnew');
                 appends += '<tr id="SaveNewGrid" data-page="'+pages+'">';
                 appends += '<td width="24" style="text-align:center;">+</td>';
                 $.each(settings.insert_field,function(kk,vv){
                     $.each(vv,function(vk,vvv){
                         if(vvv == 'varchar'){
                             appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
+                        }else if(vvv == 'text'){
+                            appends += '<td><textarea name="'+vk+'" style="width:98%;height:40px"></textarea></td>';
+                        }else if(vvv == 'date'){
+                            appends += '<td><input class="datepickers" name="'+vk+'" style="width:98%;height:40px"></td>';
+                        }else if(vvv == 'int' || vvv == 'bigint'){
+                            appends += '<td><input class="integerInput" type="text" name="'+vk+'" style="width:98%;" onkeyup="if(isNaN(this.value)){ return false; }"></td>';
                         }else if(vvv =='radio'){
                             appends += '<td><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;';
                             appends += '<input type="radio" name="'+vk+'" value="n"> Not Active</td>';
@@ -301,6 +321,8 @@ $.fn.TransGrid = function(options){
                             appends += '<option value="DLMI_IT">IT</option>';
                             appends += '<option value="DLMI_MAC">Management Accountant</option>';
                             appends += '</select></td>';
+                        }else{
+                            appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
                         }
                     });
                 });
@@ -308,41 +330,43 @@ $.fn.TransGrid = function(options){
                 appends += '</tr>';
             }
             $("#TransGrid").append(appends);
+            bind_datepicker();
             $("#AddTGrid").html('&times; Cancel');
         }
     });
-    $("tr#SaveNewGrid").live('change',function(){
-        var fields = {};
-        var pages = $(this).attr('data-page');
-        $('tr#SaveNewGrid input,select').each(function(){
-            var el = $(this);
-            if(el.attr('type') == 'radio'){
-                var nam = el.attr('name');
-                fields[nam] = $('input[name='+nam+']:checked').val(); 
-            }else{
-                fields[el.attr('name')] = el.val(); 
-            }
-        });
-        var ErrorCek = 0;
-        $.each(fields,function(kkk,vvv){
-            if(vvv.length < 1){
-                ErrorCek = 1;
-            }
-        });
-        if(ErrorCek == 0){
-            if(confirm('Are you sure want to save this data?')){
-                $.ajax({
-                    type:'post',
-                    url: settings.url_insert,
-                    data:fields,
-                    beforeSend: function() { WriteStatus('loading','Loading. Please Wait...'); },
-                    success:function(){
-                        Tgridreload(pages);
-                    }
-                });
-            }
-        }
-    });
+    
+//    $("tr#SaveNewGrid").live('change',function(){
+//        var fields = {};
+//        var pages = $(this).attr('data-page');
+//        $('tr#SaveNewGrid input,select,textarea').each(function(){
+//            var el = $(this);
+//            if(el.attr('type') == 'radio'){
+//                var nam = el.attr('name');
+//                fields[nam] = $('input[name='+nam+']:checked').val(); 
+//            }else{
+//                fields[el.attr('name')] = el.val(); 
+//            }
+//        });
+//        var ErrorCek = 0;
+//        $.each(fields,function(kkk,vvv){
+//            if(vvv.length < 1){
+//                ErrorCek = 1;
+//            }
+//        });
+//        if(ErrorCek == 0){
+//            if(confirm('Are you sure want to save this data?')){
+//                $.ajax({
+//                    type:'post',
+//                    url: settings.url_insert,
+//                    data:fields,
+//                    beforeSend: function() { WriteStatus('loading','Loading. Please Wait...'); },
+//                    success:function(){
+//                        Tgridreload(pages);
+//                    }
+//                });
+//            }
+//        }
+//    });
     $('.RemoveData').live('click',function(e){
         e.preventDefault();
         var id = $(this).attr('data-id');
@@ -367,49 +391,110 @@ $.fn.TransGrid = function(options){
     $('.editThis').live('click',function(){
         var ID = $(this).attr('id');
         var pages = $(this).attr('data-page');
+        $("#TransGrid tr").children('td').css('background','transparent');
+        $(this).children('td').css('background','pink');
         $('.viewData').show();
         $('.editData').hide();
         $('span#view'+ID).hide();
         $('span#edit'+ID).show();
         $('#SaveGrid').attr('data-id',ID);
+        $('#SaveGrid').attr('data-op','edit');
         $('#SaveGrid').removeClass('btn-disable');
         $('#SaveGrid').addClass('btn-enable');
     });
+    $('.integerInput').live('keypress',function(e){
+        var a = [];
+        var k = e.which;
+        for (i = 48; i < 58; i++)
+            a.push(i);
+
+        if (!(a.indexOf(k)>=0))
+            e.preventDefault();
+    });
     
-    $('#SaveGrid').live("click",function(){
+    $('#SaveGrid').live("click",function(e){
+        e.preventDefault();
         var fields = {};
         var ID = $(this).attr('data-id');
+        var op = $(this).attr('data-op');
         var pages = $(this).attr('data-page');
-        $('tr#'+ID+' input').each(function(){
-            var el = $(this);
-            if(el.attr('type') == 'radio'){
-                var nam = el.attr('name');
-                var new_nam = nam.replace(ID+'_','');
-                fields[new_nam] = $('input[name='+nam+']:checked').val(); 
-            }else{
-                fields[el.attr('name')] = el.val(); 
-            }
-        });
-        fields[settings.pkey] = ID;
-        $.ajax({
-            type:'post',
-            url: settings.url_edit,
-            data:fields,
-            success:function(res){
-                if(res == 'success'){
-                    WriteStatus('success','Data has been successfully Saved');
+        if(op == 'edit'){
+            $('tr#'+ID+' input,textarea').each(function(){
+                var el = $(this);
+                if(el.attr('type') == 'radio'){
+                    var nam = el.attr('name');
+                    var new_nam = nam.replace(ID+'_','');
+                    fields[new_nam] = $('input[name='+nam+']:checked').val(); 
                 }else{
-                    WriteStatus('error','Failed while saving data in to database');
+                    fields[el.attr('name')] = el.val(); 
                 }
-                Tgridreload(pages);
+            });
+            fields[settings.pkey] = ID;
+            $.ajax({
+                type:'post',
+                url: settings.url_edit,
+                data:fields,
+                success:function(res){
+                    if(res == 'success'){
+                        WriteStatus('success','Data has been successfully Saved');
+                    }else{
+                        WriteStatus('error','Failed while saving data in to database');
+                    }
+                    Tgridreload(pages);
+                    $('#SaveGrid').removeClass('btn-enable');
+                    $('#SaveGrid').addClass('btn-disable');
+                }
+            });
+        }else if(op == 'addnew'){
+            $('tr#SaveNewGrid input,select,textarea').each(function(){
+                var el = $(this);
+                if(el.attr('type') == 'radio'){
+                    var nam = el.attr('name');
+                    fields[nam] = $('input[name='+nam+']:checked').val(); 
+                }else{
+                    fields[el.attr('name')] = el.val(); 
+                }
+            });
+            var ErrorCek = 0;
+            $.each(fields,function(kkk,vvv){
+                if(vvv.length < 1){
+                    ErrorCek = 1;
+                }
+            });
+            if(ErrorCek == 0){
+                //if(confirm('Are you sure want to save this data?')){
+                    $.ajax({
+                        type:'post',
+                        url: settings.url_insert,
+                        data:fields,
+                        beforeSend: function() { WriteStatus('loading','Loading. Please Wait...'); },
+                        success:function(res){
+                            if(res == 'success'){
+                                WriteStatus('success','Data has been successfully Saved');
+                            }else{
+                                WriteStatus('error','Failed while saving data in to database');
+                            }
+                            Tgridreload(pages);
+                        }
+                    });
+                //}
+            }
+        }
+    });
+    $(document).live("mouseup",function(e){
+        if ($("#SaveNewGrid").length == 0){
+            if(!$(e.target).is('a#SaveGrid')) {
+                $(".editData").hide();
+                $(".viewData").show();
+                $("#TransGrid tr").children('td').css('background','transparent');
+                $('#SaveGrid').attr('data-op','none');
                 $('#SaveGrid').removeClass('btn-enable');
                 $('#SaveGrid').addClass('btn-disable');
             }
-        });
+        }
     });
-    $(document).live("mouseup",function(){
-        $(".editData").hide();
-        $(".viewData").show();
-
-    });
+    function bind_datepicker()
+    {
+        $("input.datepickers").datepicker({dateFormat: 'yy-mm-dd'});
+    }
 };

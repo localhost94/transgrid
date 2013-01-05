@@ -18,8 +18,8 @@ switch(@$_GET['action']){
         echo json_encode($data);
         break;
     case 'edit':
-        $_POST['edit_by'] = $_SESSION['user_id'];
-        $_POST['edit_date'] = date('Y-m-d H:i:s');
+//        $_POST['edit_by'] = $_SESSION['user_id'];
+//        $_POST['edit_date'] = date('Y-m-d H:i:s');
         $exe = $T->dbUpdate($_GET['table'], $_POST,'WHERE '.$_GET['primary_key'].' = \''.$_POST[$_GET['primary_key']].'\'');
         if($exe){
             echo 'success';
@@ -28,8 +28,8 @@ switch(@$_GET['action']){
         }
         break;
     case 'addnew':
-        $_POST['entry_by'] = $_SESSION['user_id'];
-        $_POST['entry_date'] = date('Y-m-d H:i:s');
+//        $_POST['entry_by'] = $_SESSION['user_id'];
+//        $_POST['entry_date'] = date('Y-m-d H:i:s');
         $_POST[$_GET['primary_key']] = $T->getId();
         $exe = $T->dbInsert($_GET['table'], $_POST);
         if($exe){
