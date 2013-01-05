@@ -14,7 +14,13 @@ if(!isset($_SESSION['user_id'])){
 switch(@$_GET['action']){
     case 'load':
         $offset = ($_POST['page'] - 1) * $_POST['limit'];
-        $data = $T->dbRecordList($_POST['table'],$_POST['field'],' WHERE '.$_POST['status_field'].' != \'d\' ','','',$offset.','.$_POST['limit'],$_POST['primary_key']);
+        $arr_field = explode(',',$_POST['field']);
+        $additionalSQL = array();
+        foreach($arr_field as $key){
+            $additionalSQL[] = ' '.$key.' LIKE \'%'.$_POST['keyword'].'%\' ';
+        }
+        $where = ' AND ('.implode(' OR ',$additionalSQL).') ';
+        $data = $T->dbRecordList($_POST['table'],$_POST['field'],' WHERE '.$_POST['status_field'].' != \'d\' '.$where,'','',$offset.','.$_POST['limit'],$_POST['primary_key']);
         echo json_encode($data);
         break;
     case 'edit':

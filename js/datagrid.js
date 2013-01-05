@@ -22,17 +22,22 @@ $.fn.TransGrid = function(options){
         limit:20,
         total_data:0,
         width:'100%',
+        keyword:'',
         title:'Transformatika Data Grid',
         pkey : '' // Primary Key
     },
     settings = $.extend({}, defaults, options);
+    var tot_page = Math.ceil(settings.total_data / settings.limit);
+    if(tot_page == 0){
+        tot_page = 1;
+    }
     Tgridreload(1);
     function Tgridreload(page){
         var respon = '';
         $.ajax({
             url:settings.url,
             type:settings.ajaxtipe,
-            data:settings.data+'&page='+page,
+            data:settings.data+'&page='+page+'&keyword='+settings.keyword,
             dataType:'json',
             beforeSend: function() {
                 WriteStatus('loading','Loading. Please Wait...');
@@ -41,10 +46,7 @@ $.fn.TransGrid = function(options){
                 remove_element('theTrueMsg');
                 // HITUNG PAGING NYA
                 //var tot_data = res.length;
-                var tot_page = Math.ceil(settings.total_data / settings.limit);
-                if(tot_page == 0){
-                    tot_page = 1;
-                }
+                
                 var mulai;
                 var no;
                 var akhir;
@@ -61,10 +63,13 @@ $.fn.TransGrid = function(options){
                 respon += '<div class="ui-widget" style="display:block;">';
                 respon += '<div class="ui-widget-header" style="padding:5px;">'+settings.title+'</div>';
                 if(settings.editable == true){
-                    respon += '<div class="ui-widget-content" style="padding:2px;background:#F2F6F8;border-bottom:0;">';
+                    respon += '<div class="ui-widget-content" style="padding:2px;position:relative;background:#F2F6F8;border-bottom:0;">';
                     respon += '<span style="width:4px;border-right:1.8px dotted #AAA;">&nbsp;</span> &nbsp;';
                     respon += '<a class="btn-enable" id="AddTGrid" href="#" data-page="'+page+'" style="padding:3px;display:inline-block;">+ Add New</a>';
                     respon += '&nbsp;&nbsp;<a class="btn-disable" id="SaveGrid" href="#" data-id="" data-op="none" data-page="'+page+'" style="padding:3px;display:inline-block;">&radic; Save</a>';
+                    respon += '<span style="position:absolute;right:0px;margin:auto 5px;">';
+                    respon += 'Filter: <input type="text" id="searchkey" style="width:200px;height:12px;" placeholder="Search" value="'+settings.keyword+'">';
+                    respon += '</span>';
                     respon += '</div>';
                 }
                 
@@ -389,6 +394,8 @@ $.fn.TransGrid = function(options){
                 success:function(res){
                     if(res == 'success'){
                         WriteStatus('success','Data has been successfully deleted');
+                        var tmpp = settings.total_data;
+                        settings.total_data = tmpp - 1;
                     }else{
                         WriteStatus('error','Failed while deleting data from database');
                     }
@@ -421,7 +428,13 @@ $.fn.TransGrid = function(options){
         if (!(a.indexOf(k)>=0))
             e.preventDefault();
     });
-    
+    $("#searchkey").live('keyup',function(e){
+        if(e.keyCode == 13){
+            var keys = $(this).val();
+            settings.keyword = keys;
+            Tgridreload(1);
+        }
+    });
     $('#SaveGrid').live("click",function(e){
         e.preventDefault();
         var fields = {};
@@ -481,10 +494,12 @@ $.fn.TransGrid = function(options){
                         success:function(res){
                             if(res == 'success'){
                                 WriteStatus('success','Data has been successfully Saved');
+                                var tmpp = settings.total_data;
+                                settings.total_data = tmpp + 1;
                             }else{
                                 WriteStatus('error','Failed while saving data in to database');
                             }
-                            Tgridreload(pages);
+                            Tgridreload(tot_page); // Redirect ke halaman terakhir
                         }
                     });
                 //}
@@ -503,8 +518,7 @@ $.fn.TransGrid = function(options){
             }
         }
     });
-    function bind_datepicker()
-    {
+    function bind_datepicker(){
         $("input.datepickers").datepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
         $("input.datetimepickers").datetimepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
     }

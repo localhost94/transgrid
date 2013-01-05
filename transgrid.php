@@ -37,7 +37,12 @@ Class TransGrid {
         if(is_array($this->CONF['field']) && count($this->CONF['field']) > 0){
             $fields = implode(',',$this->CONF['field']);
         }else{
-            $fields = '*';
+            $list = array();
+            $res = $T->dbQuery('SELECT column_name, data_type, character_maximum_length,is_nullable FROM information_schema.columns WHERE table_name = \''.$this->CONF['table'].'\'  ORDER BY table_schema, table_name');
+            while ($row = $T->dbFetchAssoc($res)) {
+                $list[] = $row['column_name'];
+            }
+            $fields = implode(',',$list);
         }
         if(is_array($this->CONF['insert_field']) && count($this->CONF['insert_field']) > 0){
             $list = array();
