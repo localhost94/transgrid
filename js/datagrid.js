@@ -17,7 +17,9 @@ $.fn.TransGrid = function(options){
         url_delete:'',
         url_insert:'',
         edit_field:'',
+        custom_edit:false,
         insert_field:'',
+        custom_insert:false,
         status_field:'',
         base_url :'',
         path:'',
@@ -164,53 +166,66 @@ $.fn.TransGrid = function(options){
                                     respon +=' </span>';
                                     if(settings.editable==true){
                                         respon += '<span style="display:none;" id="edit'+editId+'" class="editData">';
-                                        $.each(settings.edit_field,function(kk,vv){
-                                            if($.inArray(ii,vv)){
-                                            $.each(vv,function(vk,vvv){
-                                                if(ii == vk){
-                                                    if(vvv == 'varchar'){
-                                                        respon += '<input type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
-                                                    }else if(vvv == 'text'){
-                                                        respon += '<textarea name="'+vk+'" style="width:98%;height:40px">'+values+'</textarea>';
-                                                    }else if(vvv == 'date'){
-                                                        respon += '<input class="datepickers" name="'+vk+'" style="width:98%;height:40px" value="'+values+'">';
-                                                    }else if(vvv == 'datetime'){
-                                                        respon += '<input class="datetimepickers" name="'+vk+'" style="width:98%;height:40px" value="'+values+'">';
-                                                    }else if(vvv == 'int' || vvv == 'bigint'){
-                                                        respon += '<input class="integerInput" type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
-                                                    }else if(vvv =='radio'){
-                                                        respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
-                                                        if(values == 'y'){
-                                                            respon += ' checked="checked"'
-                                                        }    
-                                                        respon += '> Active&nbsp;';
-                                                        respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
-                                                        if(values == 'n'){
-                                                            respon += ' checked="checked"'
-                                                        } 
-                                                        respon += '> Not Active';
-                                                    }else if(vvv == 'selectYear'){
-                                                        var currentTime = new Date()
-                                                        var year = currentTime.getFullYear()
-                                                        var nextYear = parseInt(year) + 5;
-                                                        respon += '<select name="'+vk+'">';
-                                                        for(i=year;i<=nextYear;i++){
-                                                            respon += '<option value="'+i+'"'
-                                                            if(i == values){
-                                                                respon += ' selected="selected"';
+                                        if(settings.custom_edit == false){
+                                            $.each(settings.edit_field,function(kk,vv){
+                                                if($.inArray(ii,vv)){
+                                                $.each(vv,function(vk,vvv){
+                                                    if(ii == vk){
+                                                        if(vvv == 'varchar'){
+                                                            respon += '<input type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
+                                                        }else if(vvv == 'text'){
+                                                            respon += '<textarea name="'+vk+'" style="width:98%;height:40px">'+values+'</textarea>';
+                                                        }else if(vvv == 'date'){
+                                                            respon += '<input class="datepickers" name="'+vk+'" style="width:98%;height:40px" value="'+values+'">';
+                                                        }else if(vvv == 'datetime'){
+                                                            respon += '<input class="datetimepickers" name="'+vk+'" style="width:98%;height:40px" value="'+values+'">';
+                                                        }else if(vvv == 'int' || vvv == 'bigint'){
+                                                            respon += '<input class="integerInput" type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
+                                                        }else if(vvv =='radio'){
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
+                                                            if(values == 'y'){
+                                                                respon += ' checked="checked"'
                                                             }    
-                                                            respon += '>'+i+'</option>';
+                                                            respon += '> Active&nbsp;';
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
+                                                            if(values == 'n'){
+                                                                respon += ' checked="checked"'
+                                                            } 
+                                                            respon += '> Not Active';
+                                                        }else if(vvv == 'selectYear'){
+                                                            var currentTime = new Date()
+                                                            var year = currentTime.getFullYear()
+                                                            var nextYear = parseInt(year) + 5;
+                                                            respon += '<select name="'+vk+'">';
+                                                            for(i=year;i<=nextYear;i++){
+                                                                respon += '<option value="'+i+'"'
+                                                                if(i == values){
+                                                                    respon += ' selected="selected"';
+                                                                }    
+                                                                respon += '>'+i+'</option>';
+                                                            }
+                                                            respon += '</select>';
+                                                        }else{
+                                                            respon += '<input type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
                                                         }
-                                                        respon += '</select>';
-                                                    }else{
-                                                        respon += '<input type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
                                                     }
+                                                });
+                                                }else{
+                                                    respon += values;
                                                 }
                                             });
-                                            }else{
-                                                respon += values;
-                                            }
-                                        });
+                                        }else{
+                                            $.each(settings.edit_field,function(kk,vv){
+                                                if($.inArray(ii,vv)){
+                                                    $.each(vv,function(vk,vvv){
+                                                        if(ii == vk){
+                                                            respon += vvv;
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                        
                                         respon += '</span>';
                                     }
                                     respon += '</td>';
@@ -311,40 +326,53 @@ $.fn.TransGrid = function(options){
                 $('#SaveGrid').attr('data-op','addnew');
                 appends += '<tr id="SaveNewGrid" data-page="'+pages+'">';
                 appends += '<td width="24" style="text-align:center;">+</td>';
-                $.each(settings.insert_field,function(kk,vv){
-                    $.each(vv,function(vk,vvv){
-                        if(vvv == 'varchar'){
-                            appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
-                        }else if(vvv == 'text'){
-                            appends += '<td><textarea name="'+vk+'" style="width:98%;height:40px"></textarea></td>';
-                        }else if(vvv == 'date'){
-                            appends += '<td><input class="datepickers" name="'+vk+'" style="width:98%;height:40px"></td>';
-                        }else if(vvv == 'datetime'){
-                            appends += '<td><input class="datetimepickers" name="'+vk+'" style="width:98%;height:40px"></td>';
-                        }else if(vvv == 'int' || vvv == 'bigint'){
-                            appends += '<td><input class="integerInput" type="text" name="'+vk+'" style="width:98%;"></td>';
-                        }else if(vvv =='radio'){
-                            appends += '<td><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;';
-                            appends += '<input type="radio" name="'+vk+'" value="n"> Not Active</td>';
-                        }else if(vvv == 'selectYear'){
-                            var currentTime = new Date()
-                            var year = currentTime.getFullYear()
-                            var nextYear = parseInt(year) + 5;
-                            appends += '<td>';
-                            appends += '<select name="'+vk+'">';
-                            for(i=year;i<=nextYear;i++){
-                                appends += '<option value="'+i+'"'
-                                if(i == year){
-                                    appends += ' selected="selected"';
-                                }    
-                                appends += '>'+i+'</option>';
+                if(settings.custom_insert == false){
+                    $.each(settings.insert_field,function(kk,vv){
+                        $.each(vv,function(vk,vvv){
+                            if(vvv == 'varchar'){
+                                appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
+                            }else if(vvv == 'text'){
+                                appends += '<td><textarea name="'+vk+'" style="width:98%;height:40px"></textarea></td>';
+                            }else if(vvv == 'date'){
+                                appends += '<td><input class="datepickers" name="'+vk+'" style="width:98%;height:40px"></td>';
+                            }else if(vvv == 'datetime'){
+                                appends += '<td><input class="datetimepickers" name="'+vk+'" style="width:98%;height:40px"></td>';
+                            }else if(vvv == 'int' || vvv == 'bigint'){
+                                appends += '<td><input class="integerInput" type="text" name="'+vk+'" style="width:98%;"></td>';
+                            }else if(vvv =='radio'){
+                                appends += '<td><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;';
+                                appends += '<input type="radio" name="'+vk+'" value="n"> Not Active</td>';
+                            }else if(vvv == 'selectYear'){
+                                var currentTime = new Date()
+                                var year = currentTime.getFullYear()
+                                var nextYear = parseInt(year) + 5;
+                                appends += '<td>';
+                                appends += '<select name="'+vk+'">';
+                                for(i=year;i<=nextYear;i++){
+                                    appends += '<option value="'+i+'"'
+                                    if(i == year){
+                                        appends += ' selected="selected"';
+                                    }    
+                                    appends += '>'+i+'</option>';
+                                }
+                                appends += '</select></td>';
+                            }else{
+                                appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
                             }
-                            appends += '</select></td>';
-                        }else{
-                            appends += '<td><input type="text" name="'+vk+'" style="width:98%;"></td>';
+                        });
+                    });
+                }else{
+                    $.each(settings.insert_field,function(kk,vv){
+                        if($.inArray(ii,vv)){
+                            $.each(vv,function(vk,vvv){
+                                if(ii == vk){
+                                    respon += vvv;
+                                }
+                            });
                         }
                     });
-                });
+                }
+                
                 appends += '<td width="24"></td>';
                 appends += '</tr>';
             }
@@ -446,7 +474,7 @@ $.fn.TransGrid = function(options){
         var op = $(this).attr('data-op');
         var pages = $(this).attr('data-page');
         if(op == 'edit'){
-            $('tr#'+ID+' input,textarea').each(function(){
+            $('tr#'+ID+' input,select,textarea').each(function(){
                 var el = $(this);
                 if(el.attr('type') == 'radio'){
                     var nam = el.attr('name');
@@ -494,16 +522,17 @@ $.fn.TransGrid = function(options){
                         type:'post',
                         url: settings.url_insert,
                         data:fields,
-                        beforeSend: function() { WriteStatus('loading','Loading. Please Wait...'); },
+                        //beforeSend: function() { WriteStatus('loading','Loading. Please Wait...'); },
                         success:function(res){
+                            Tgridreload(tot_page); // Redirect ke halaman terakhir
+                            $('#SaveGrid').removeClass('btn-enable');
+                            $('#SaveGrid').addClass('btn-disable');
                             if(res == 'success'){
                                 WriteStatus('success','Data has been successfully Saved');
-                                var tmpp = settings.total_data;
-                                settings.total_data = tmpp + 1;
                             }else{
                                 WriteStatus('error','Failed while saving data in to database');
                             }
-                            Tgridreload(tot_page); // Redirect ke halaman terakhir
+                            
                         }
                     });
                 //}
