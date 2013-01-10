@@ -151,6 +151,15 @@ Class TransGrid {
             $pkey   = $T->dbFetchArray($query);
             $this->CONF['primary_key'] = $pkey[0];
         }
+        global $__PLANTS;
+        $arr_ = array();
+        $index_ = array();
+        foreach($__PLANTS as $k=>$v){
+            $arr_[] = "{".$k.":'".$v."'}";
+            $index_[] = $k;
+        }
+        $arr_val = '['.implode(',',$arr_).']';
+        $arr_idx = json_encode($index_);
         $res = '<link type="text/css" href="'.$this->base_url.$this->path.'css/qshe.css" rel="stylesheet" />';
         $res .= '<script src="'.$this->base_url.$this->path.'js/datagrid.js"></script>';
         $res .= '<div id="ThisIsGrid"></div>';
@@ -170,9 +179,13 @@ Class TransGrid {
                         insert_field : '.$insert_field.',
                         edit_field : '.$edit_field.',
                         tablehead : '.$tablehead.',
-                        base_url : "'.$this->base_url.'",    
+                        base_url : "'.$this->base_url.'", 
+                        custom_edit: '.$this->CONF['custom_edit'].',
+                        custom_insert: '.$this->CONF['custom_insert'].',    
                         path : "'.$this->path.'",    
-                        status_field: "'.$this->CONF['status_field'].'"    
+                        status_field: "'.$this->CONF['status_field'].'",
+                        arr_val : '.$arr_val.',
+                        arr_idx : '.$arr_idx.'    
                     });
                 });';
         

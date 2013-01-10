@@ -28,6 +28,8 @@ $.fn.TransGrid = function(options){
         width:'100%',
         keyword:'',
         title:'Transformatika Data Grid',
+        arr_val:'',
+        arr_idx:'',
         pkey : '' // Primary Key
     },
     settings = $.extend({}, defaults, options);
@@ -149,20 +151,38 @@ $.fn.TransGrid = function(options){
                             }
                             respon +='<tr class="'+trClass+'" id="'+editId+'" data-page="'+page+'">';
                             respon +='<td width="24px" style="text-align:center;">'+no+'</td>';
+                              
                             $.each(vals,function(ii,values){
                                 if(ii != settings.pkey){
                                     respon += '<td><span id="'+viewClass+editId+'" class="viewData">';
-                                    if(ii == settings.status_field || values == 'y' || values == 'n' || values == 'd'){
-                                        if(values == 'y'){
-                                            respon += 'Active';
-                                        }else if(values == 'n'){
-                                            respon += 'Not Active';
-                                        }else if(values == 'd'){
-                                            respon += 'Deleted';
-                                        }
+                                    if($.inArray(values,settings.arr_idx) >= 0){
+                                        $.each(settings.arr_val,function(kval,vval){
+                                            $.each(vval,function(kkval,vvval){
+                                                if(kkval == values){
+                                                    respon += vvval;
+                                                }
+                                            });
+                                        });    
                                     }else{
-                                        respon += values;
+                                        if(ii == settings.status_field){
+                                            if(values.toUpperCase() == 'Y'){
+                                                respon += 'Active';
+                                            }else if(values.toUpperCase() == 'N'){
+                                                respon += 'Not Active';
+                                            }else if(values.toUpperCase() == 'D'){
+                                                respon += 'Deleted';
+                                            }
+                                        } else if(values.toUpperCase() === 'Y' || values.toUpperCase() === 'N'){
+                                            if(values.toUpperCase() === 'Y'){
+                                                respon += 'Yes';
+                                            }else if(values.toUpperCase() === 'N'){
+                                                respon += 'No';
+                                            }
+                                        }else{
+                                            respon += values;
+                                        }
                                     }
+                                    
                                     respon +=' </span>';
                                     if(settings.editable==true){
                                         respon += '<span style="display:none;" id="edit'+editId+'" class="editData">';
@@ -192,6 +212,17 @@ $.fn.TransGrid = function(options){
                                                                 respon += ' checked="checked"'
                                                             } 
                                                             respon += '> Not Active';
+                                                        }else if(vvv =='yesno'){
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
+                                                            if(values == 'y'){
+                                                                respon += ' checked="checked"'
+                                                            }    
+                                                            respon += '> Yes&nbsp;';
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
+                                                            if(values == 'n'){
+                                                                respon += ' checked="checked"'
+                                                            } 
+                                                            respon += '> No';
                                                         }else if(vvv == 'selectYear'){
                                                             var currentTime = new Date()
                                                             var year = currentTime.getFullYear()
@@ -219,7 +250,17 @@ $.fn.TransGrid = function(options){
                                                 if($.inArray(ii,vv)){
                                                     $.each(vv,function(vk,vvv){
                                                         if(ii == vk){
-                                                            respon += vvv;
+                                                            var htm = vvv;
+                                                            var html = htm.replace('id="'+vk+'"','');
+                                                            var htmls;
+                                                            if(html.indexOf('<input type="text"') >= 0){
+                                                                htmls = html.replace('value','value="'+values+'"');
+                                                            }else if (html.indexOf('<select name') >= 0){
+                                                                htmls = html.replace('<option value="'+values.toUpperCase()+'"','<option value="'+values.toUpperCase()+'" selected="selected"');
+                                                            }else{
+                                                                htmls = html;
+                                                            }
+                                                            respon += htmls;
                                                         }
                                                     });
                                                 }
@@ -263,7 +304,7 @@ $.fn.TransGrid = function(options){
                     respon +='</th>';
                     respon +='<th style="text-align:right;font-weight:normal;">';
                     var urutan = Math.ceil((page - 1) * settings.limit) + 1;
-                    respon +='Displaying '+urutan+' - '+(no - 1)+' of '+settings.total_data;
+                    respon +='Displaying '+urutan+' - '+(no - 1)+' of '+parseInt(settings.total_data);
                     respon +='</th>';
                     respon +='</tr>';
                     respon +='</table>';
@@ -363,13 +404,9 @@ $.fn.TransGrid = function(options){
                     });
                 }else{
                     $.each(settings.insert_field,function(kk,vv){
-                        if($.inArray(ii,vv)){
-                            $.each(vv,function(vk,vvv){
-                                if(ii == vk){
-                                    respon += vvv;
-                                }
-                            });
-                        }
+                        $.each(vv,function(vk,vvv){
+                            appends += '<td>'+vvv+'</td>';
+                        });
                     });
                 }
                 
@@ -426,7 +463,7 @@ $.fn.TransGrid = function(options){
                 success:function(res){
                     if(res == 'success'){
                         WriteStatus('success','Data has been successfully deleted');
-                        var tmpp = settings.total_data;
+                        var tmpp = parseInt(settings.total_data);
                         settings.total_data = tmpp - 1;
                     }else{
                         WriteStatus('error','Failed while deleting data from database');
@@ -438,18 +475,19 @@ $.fn.TransGrid = function(options){
         return false;
     })
     $('.editThis').live('click',function(){
-        var ID = $(this).attr('id');
-        var pages = $(this).attr('data-page');
-        $("#TransGrid tr").children('td').css('background','transparent');
-        $(this).children('td').css('background','pink');
-        $('.viewData').show();
-        $('.editData').hide();
-        $('span#view'+ID).hide();
-        $('span#edit'+ID).show();
-        $('#SaveGrid').attr('data-id',ID);
-        $('#SaveGrid').attr('data-op','edit');
-        $('#SaveGrid').removeClass('btn-disable');
-        $('#SaveGrid').addClass('btn-enable');
+            var ID = $(this).attr('id');
+            var pages = $(this).attr('data-page');
+            $("#TransGrid tr").children('td').css('background','transparent');
+            $(this).children('td').css('background','pink');
+            $('.viewData').show();
+            $('.editData').hide();
+            $('span#view'+ID).hide();
+            $('span#edit'+ID).show();
+            $('#SaveGrid').attr('data-id',ID);
+            $('#SaveGrid').attr('data-op','edit');
+            $('#SaveGrid').removeClass('btn-disable');
+            $('#SaveGrid').addClass('btn-enable');
+            
     });
     $('.integerInput').live('keypress',function(e){
         var a = [];
@@ -474,7 +512,7 @@ $.fn.TransGrid = function(options){
         var op = $(this).attr('data-op');
         var pages = $(this).attr('data-page');
         if(op == 'edit'){
-            $('tr#'+ID+' input,select,textarea').each(function(){
+            $('tr#'+ID+' :input').each(function(){
                 var el = $(this);
                 if(el.attr('type') == 'radio'){
                     var nam = el.attr('name');
@@ -501,7 +539,7 @@ $.fn.TransGrid = function(options){
                 }
             });
         }else if(op == 'addnew'){
-            $('tr#SaveNewGrid input,select,textarea').each(function(){
+            $('tr#SaveNewGrid :input').each(function(){
                 var el = $(this);
                 if(el.attr('type') == 'radio'){
                     var nam = el.attr('name');
@@ -524,6 +562,8 @@ $.fn.TransGrid = function(options){
                         data:fields,
                         //beforeSend: function() { WriteStatus('loading','Loading. Please Wait...'); },
                         success:function(res){
+                            var tmpp = parseInt(settings.total_data);
+                            settings.total_data = tmpp + 1;
                             Tgridreload(tot_page); // Redirect ke halaman terakhir
                             $('#SaveGrid').removeClass('btn-enable');
                             $('#SaveGrid').addClass('btn-disable');
@@ -539,6 +579,17 @@ $.fn.TransGrid = function(options){
             }
         }
     });
+    $(".editThis").live("mouseup",function(){
+        return false
+    });
+    
+    $("select").live("mouseup",function(){
+        return false
+    });
+    $("select").live("click",function(){
+        return false;
+    });
+    
     $(document).live("mouseup",function(e){
         if ($("#SaveNewGrid").length == 0){
             if(!$(e.target).is('a#SaveGrid')) {
@@ -551,6 +602,7 @@ $.fn.TransGrid = function(options){
             }
         }
     });
+    
     function bind_datepicker(){
         $("input.datepickers").datepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
         $("input.datetimepickers").datetimepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
