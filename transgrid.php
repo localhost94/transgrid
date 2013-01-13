@@ -16,6 +16,9 @@ Class TransGrid {
         $this->CONF['tablehead']      = array();
         $this->CONF['custom_edit']    = false;
         $this->CONF['custom_insert']  = false;
+        $this->CONF['sortable']       = false;
+        $this->CONF['order_field']    = '';
+        $this->CONF['link']           = '';
         return $this->CONF;
     }
     function CreateGrid($CONF){
@@ -28,6 +31,11 @@ Class TransGrid {
             $this->CONF['editable'] = 'false';
         }else{
             $this->CONF['editable'] = 'true';
+        }
+        if($this->CONF['sortable'] == NULL || $this->CONF['sortable'] == false){
+            $this->CONF['sortable'] = 'false';
+        }else{
+            $this->CONF['sortable'] = 'true';
         }
         if($this->CONF['custom_edit'] == NULL || $this->CONF['custom_edit'] == false){
             $this->CONF['custom_edit'] = 'false';
@@ -45,7 +53,11 @@ Class TransGrid {
         }else{
             $total_data = $T->dbCount($this->CONF['table'],' WHERE '.$this->CONF['status_field'].' != \'d\'');
         }
-        
+        if(empty($this->CONF['order_field']) || $this->CONF['order_field'] == ''){
+            $order_field = '""';
+        }else{
+            $order_field = '"'.$this->CONF['order_field'].'"';
+        }
         if(is_array($this->CONF['field']) && count($this->CONF['field']) > 0){
             $fields = implode(',',$this->CONF['field']);
         }else{
@@ -166,7 +178,7 @@ Class TransGrid {
         $res .= '<script>';
         $res .= '$(document).ready(function(){
                     $("#ThisIsGrid").TransGrid({
-                        data:"table='.$this->CONF['table'].'&limit='.$this->CONF['limit'].'&field='.$fields.'&primary_key='.$this->CONF['primary_key'].'&status_field='.$this->CONF['status_field'].'",
+                        data:"table='.$this->CONF['table'].'&limit='.$this->CONF['limit'].'&field='.$fields.'&primary_key='.$this->CONF['primary_key'].'&status_field='.$this->CONF['status_field'].'&sortable='.$this->CONF['sortable'].'&order_field='.$this->CONF['order_field'].'",
                         url:"'.$this->base_url.$this->path.'handle.php?action=load",
                         editable : '.$this->CONF['editable'].',
                         limit : '.$this->CONF['limit'].',    
@@ -175,9 +187,12 @@ Class TransGrid {
                         pkey: "'.$this->CONF['primary_key'].'",
                         url_edit: "'.$this->base_url.$this->path.'handle.php?action=edit&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'",  
                         url_delete: "'.$this->base_url.$this->path.'handle.php?action=delete&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'&status_field='.$this->CONF['status_field'].'",
-                        url_insert: "'.$this->base_url.$this->path.'handle.php?action=addnew&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'",
+                        url_insert: "'.$this->base_url.$this->path.'handle.php?action=addnew&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'&sortable='.$this->CONF['sortable'].'&order_field='.$this->CONF['order_field'].'",
+                        url_order: "'.$this->base_url.$this->path.'handle.php?action=reorder&table='.$this->CONF['table'].'&primary_key='.$this->CONF['primary_key'].'&order_field='.$this->CONF['order_field'].'",
                         insert_field : '.$insert_field.',
                         edit_field : '.$edit_field.',
+                        order_field: '.$order_field.',
+                        sortable : '.$this->CONF['sortable'].',
                         tablehead : '.$tablehead.',
                         base_url : "'.$this->base_url.'", 
                         custom_edit: '.$this->CONF['custom_edit'].',
@@ -185,7 +200,8 @@ Class TransGrid {
                         path : "'.$this->path.'",    
                         status_field: "'.$this->CONF['status_field'].'",
                         arr_val : '.$arr_val.',
-                        arr_idx : '.$arr_idx.'    
+                        arr_idx : '.$arr_idx.',
+                        link:"'.$this->CONF['link'].'"  
                     });
                 });';
         

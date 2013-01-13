@@ -16,6 +16,7 @@ $.fn.TransGrid = function(options){
         url_edit:'',
         url_delete:'',
         url_insert:'',
+        url_order:'',
         edit_field:'',
         custom_edit:false,
         insert_field:'',
@@ -30,6 +31,9 @@ $.fn.TransGrid = function(options){
         title:'Transformatika Data Grid',
         arr_val:'',
         arr_idx:'',
+        sortable:false,
+        order_field:'',
+        link:'',
         pkey : '' // Primary Key
     },
     settings = $.extend({}, defaults, options);
@@ -83,6 +87,7 @@ $.fn.TransGrid = function(options){
                 respon +='<table id="TransGrid" class="table-explorer"  style="width:'+settings.width+';margin:0px;">';
                 if(res.length == 0){
                     var cols;
+                    respon += '<thead>';
                     if(settings.tablehead != ''){
                         respon +='<tr><th width="24px">No</th>';
                         $.each(settings.tablehead, function(key, val) {
@@ -98,8 +103,11 @@ $.fn.TransGrid = function(options){
                     }else{
                         cols = 1;
                     }
-                    respon += '<tr><td colspan="'+cols+'">Data not found</td></tr></table>';
+                    respon +='</thead>';
+                    respon +='<tbody class="kontene">';
+                    respon += '<tr><td colspan="'+cols+'">Data not found</td></tr></tbody></table>';
                 }else{
+                    respon += '<thead>';
                     if(settings.tablehead == ''){
                         respon +='<tr><th width="24px">No</th>';
                         $.each(res, function(key, val) {
@@ -125,6 +133,8 @@ $.fn.TransGrid = function(options){
                         }
                         respon +='</tr>';
                     }
+                    respon +='</thead>';
+                    respon +='<tbody class="kontene">';
                     $.each(res, function(keys, vals) {
                         //if(keys >= mulai && keys <= akhir){
                             var editId;
@@ -148,9 +158,12 @@ $.fn.TransGrid = function(options){
                             if(settings.editable == true){
                                 trClass = 'editThis';
                                 viewClass = 'view';
+                            }else{
+                                trClass = 'linkThis';
+                                viewClass = '';
                             }
-                            respon +='<tr class="'+trClass+'" id="'+editId+'" data-page="'+page+'">';
-                            respon +='<td width="24px" style="text-align:center;">'+no+'</td>';
+                            respon +='<tr class="'+trClass+'" data-id="'+editId+'" id="reCord_'+editId+'" data-page="'+page+'">';
+                            respon +='<td class="levelonehandle" id="reCord'+editId+'" width="24px" style="text-align:center;cursor:move"><span id="reCord'+editId+'">'+no+'</span></td>';
                               
                             $.each(vals,function(ii,values){
                                 if(ii != settings.pkey){
@@ -279,7 +292,8 @@ $.fn.TransGrid = function(options){
                             respon +='</tr>';
                        // }
                     });
-                    respon += '</table>';
+                    respon +='</tbody>';
+                    respon +='</table>';
                     respon +='<table class="table-explorer" style="width:'+settings.width+';margin:0px;">';
                     respon +='<tr>';
                     respon +='<th style="border-right:0;font-weight:normal;">';
@@ -311,6 +325,9 @@ $.fn.TransGrid = function(options){
                 }
                 respon += '</div>';
                 element.html(respon);
+                if(settings.sortable == true){
+                    enableSortable(page);
+                }
             }
         });
         return false;
@@ -474,10 +491,11 @@ $.fn.TransGrid = function(options){
         }
         return false;
     })
-    $('.editThis').live('click',function(){
-            var ID = $(this).attr('id');
+    $('.editThis').live('click',function(e){
+        
+            var ID = $(this).attr('data-id');
             var pages = $(this).attr('data-page');
-            $("#TransGrid tr").children('td').css('background','transparent');
+            $("#TransGrid tr").children('td').css('background','#FAFAFA');
             $(this).children('td').css('background','pink');
             $('.viewData').show();
             $('.editData').hide();
@@ -488,6 +506,10 @@ $.fn.TransGrid = function(options){
             $('#SaveGrid').removeClass('btn-disable');
             $('#SaveGrid').addClass('btn-enable');
             
+    });
+    $('.linkThis').live('click',function(){
+        var ID = $(this).attr('data-id');
+        window.location.href= settings.link+'&id='+ID;
     });
     $('.integerInput').live('keypress',function(e){
         var a = [];
@@ -512,7 +534,7 @@ $.fn.TransGrid = function(options){
         var op = $(this).attr('data-op');
         var pages = $(this).attr('data-page');
         if(op == 'edit'){
-            $('tr#'+ID+' :input').each(function(){
+            $('tr#reCord_'+ID+' :input').each(function(){
                 var el = $(this);
                 if(el.attr('type') == 'radio'){
                     var nam = el.attr('name');
@@ -579,9 +601,11 @@ $.fn.TransGrid = function(options){
             }
         }
     });
-    $(".editThis").live("mouseup",function(){
-        return false
-    });
+//    $(".editThis").live("mouseup",function(e){
+//        if(!$(e.target).is('.levelonehandle')) {
+//            return false
+//        }
+//    });
     
     $("select").live("mouseup",function(){
         return false
@@ -606,5 +630,22 @@ $.fn.TransGrid = function(options){
     function bind_datepicker(){
         $("input.datepickers").datepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
         $("input.datetimepickers").datetimepicker({dateFormat: 'yy-mm-dd',showAnim: 'clip'});
+    }
+    function enableSortable(page){
+        $('#TransGrid tbody.kontene').sortable({
+            handle:'.levelonehandle',
+            update: function(){
+                var order = $('table#TransGrid tbody.kontene').sortable().sortable('serialize');
+                $.ajax({
+                    url:settings.url_order,
+                    data:order+'&page='+page+'&limit='+settings.limit,
+                    type:'post',
+                    success:function(){
+                        Tgridreload(page);
+                    }
+                });
+            }
+        });
+        $('#TransGrid tbody.kontene').disableSelection({handle:'.levelonehandle'});
     }
 };
