@@ -185,7 +185,7 @@ $.fn.TransGrid = function(options){
                                             }else if(values.toUpperCase() == 'D'){
                                                 respon += 'Deleted';
                                             }
-                                        } else if(values.toUpperCase() === 'Y' || values.toUpperCase() === 'N'){
+                                        } else if(isNaN(values) && (values.toUpperCase() === 'Y' || values.toUpperCase() === 'N')){
                                             if(values.toUpperCase() === 'Y'){
                                                 respon += 'Yes';
                                             }else if(values.toUpperCase() === 'N'){
@@ -215,27 +215,27 @@ $.fn.TransGrid = function(options){
                                                         }else if(vvv == 'int' || vvv == 'bigint'){
                                                             respon += '<input class="integerInput" type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
                                                         }else if(vvv =='radio'){
-                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
+                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="y"';
                                                             if(values == 'y'){
                                                                 respon += ' checked="checked"'
                                                             }    
-                                                            respon += '> Active&nbsp;';
-                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
+                                                            respon += '> Active&nbsp;</label>';
+                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="n"';
                                                             if(values == 'n'){
                                                                 respon += ' checked="checked"'
                                                             } 
-                                                            respon += '> Not Active';
+                                                            respon += '> Not Active</label>';
                                                         }else if(vvv =='yesno'){
-                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
+                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="y"';
                                                             if(values == 'y'){
                                                                 respon += ' checked="checked"'
                                                             }    
-                                                            respon += '> Yes&nbsp;';
-                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
+                                                            respon += '> Yes&nbsp;</label>';
+                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="n"';
                                                             if(values == 'n'){
                                                                 respon += ' checked="checked"'
                                                             } 
-                                                            respon += '> No';
+                                                            respon += '> No</label>';
                                                         }else if(vvv == 'selectYear'){
                                                             var currentTime = new Date()
                                                             var year = currentTime.getFullYear()
@@ -398,8 +398,8 @@ $.fn.TransGrid = function(options){
                             }else if(vvv == 'int' || vvv == 'bigint'){
                                 appends += '<td><input class="integerInput" type="text" name="'+vk+'" style="width:98%;"></td>';
                             }else if(vvv =='radio'){
-                                appends += '<td><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;';
-                                appends += '<input type="radio" name="'+vk+'" value="n"> Not Active</td>';
+                                appends += '<td><label><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;</label>';
+                                appends += '<label><input type="radio" name="'+vk+'" value="n"> Not Active</label></td>';
                             }else if(vvv == 'selectYear'){
                                 var currentTime = new Date()
                                 var year = currentTime.getFullYear()
