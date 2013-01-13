@@ -192,7 +192,7 @@ $.fn.TransGrid = function(options){
                                                 respon += 'No';
                                             }
                                         }else{
-                                            respon += values;
+                                            respon += nl2br(values);
                                         }
                                     }
                                     
@@ -270,6 +270,8 @@ $.fn.TransGrid = function(options){
                                                                 htmls = html.replace('value','value="'+values+'"');
                                                             }else if (html.indexOf('<select name') >= 0){
                                                                 htmls = html.replace('<option value="'+values.toUpperCase()+'"','<option value="'+values.toUpperCase()+'" selected="selected"');
+                                                            }else if(html.indexOf('<textarea ') >= 0){
+                                                                htmls = html.replace('</textarea>',values+'</textarea>');
                                                             }else{
                                                                 htmls = html;
                                                             }
@@ -648,4 +650,67 @@ $.fn.TransGrid = function(options){
         });
         $('#TransGrid tbody.kontene').disableSelection({handle:'.levelonehandle'});
     }
+    function html_entity_decode (string, quote_style) {
+      // http://kevin.vanzonneveld.net
+      // +   original by: john (http://www.jd-tech.net)
+      // +      input by: ger
+      // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+      // +    revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+      // +   bugfixed by: Onno Marsman
+      // +   improved by: marc andreu
+      // +    revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+      // +      input by: Ratheous
+      // +   bugfixed by: Brett Zamir (http://brett-zamir.me)
+      // +      input by: Nick Kolosov (http://sammy.ru)
+      // +   bugfixed by: Fox
+      // -    depends on: get_html_translation_table
+      // *     example 1: html_entity_decode('Kevin &amp; van Zonneveld');
+      // *     returns 1: 'Kevin & van Zonneveld'
+      // *     example 2: html_entity_decode('&amp;lt;');
+      // *     returns 2: '&lt;'
+      var hash_map = {},
+        symbol = '',
+        tmp_str = '',
+        entity = '';
+      tmp_str = string.toString();
+
+      if (false === (hash_map = this.get_html_translation_table('HTML_ENTITIES', quote_style))) {
+        return false;
+      }
+
+      // fix &amp; problem
+      // http://phpjs.org/functions/get_html_translation_table:416#comment_97660
+      delete(hash_map['&']);
+      hash_map['&'] = '&amp;';
+
+      for (symbol in hash_map) {
+        entity = hash_map[symbol];
+        tmp_str = tmp_str.split(entity).join(symbol);
+      }
+      tmp_str = tmp_str.split('&#039;').join("'");
+
+      return tmp_str;
+    }
+    function nl2br (str, is_xhtml) {
+      // http://kevin.vanzonneveld.net
+      // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+      // +   improved by: Philip Peterson
+      // +   improved by: Onno Marsman
+      // +   improved by: Atli Þór
+      // +   bugfixed by: Onno Marsman
+      // +      input by: Brett Zamir (http://brett-zamir.me)
+      // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+      // +   improved by: Brett Zamir (http://brett-zamir.me)
+      // +   improved by: Maximusya
+      // *     example 1: nl2br('Kevin\nvan\nZonneveld');
+      // *     returns 1: 'Kevin<br />\nvan<br />\nZonneveld'
+      // *     example 2: nl2br("\nOne\nTwo\n\nThree\n", false);
+      // *     returns 2: '<br>\nOne<br>\nTwo<br>\n<br>\nThree<br>\n'
+      // *     example 3: nl2br("\nOne\nTwo\n\nThree\n", true);
+      // *     returns 3: '<br />\nOne<br />\nTwo<br />\n<br />\nThree<br />\n'
+      var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br ' + '/>' : '<br>'; // Adjust comment to avoid issue on phpjs.org display
+
+      return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+    }
+
 };
