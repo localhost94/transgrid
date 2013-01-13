@@ -35,7 +35,11 @@ switch(@$_GET['action']){
     case 'edit':
 //        $_POST['edit_by'] = $_SESSION['user_id'];
 //        $_POST['edit_date'] = date('Y-m-d H:i:s');
-        $exe = $T->dbUpdate($_GET['table'], $_POST,'WHERE '.$_GET['primary_key'].' = \''.$_POST[$_GET['primary_key']].'\'');
+        $arr_val = array();
+        foreach($_POST as $key => $values){
+            $arr_val[$key] = htmlentities(trim($values),ENT_QUOTES);
+        }
+        $exe = $T->dbUpdate($_GET['table'], $arr_val,'WHERE '.$_GET['primary_key'].' = \''.$_POST[$_GET['primary_key']].'\'');
         if($exe){
             echo 'success';
         }else{
@@ -51,8 +55,11 @@ switch(@$_GET['action']){
             $maks = $T->dbResult($cek,0,'maks');
             $_POST[$_GET['order_field']] = (int) $maks + 1;
         }
-        
-        $exe = $T->dbInsert($_GET['table'], $_POST);
+        $arr_val = array();
+        foreach($_POST as $key => $values){
+            $arr_val[$key] = htmlentities(trim($values),ENT_QUOTES);
+        }
+        $exe = $T->dbInsert($_GET['table'], $arr_val);
         if($exe){
             echo 'success';
         }else{
