@@ -1,6 +1,5 @@
-/* Data Grid
- * Jquery Plugin buat load table via json
- * Minimal konfigurasi : $('#element').TransGrid({ url:'file_ajax.php' });
+/* Data Grid (Open Source Datagrid plugin)
+ * Example : $('#element').TransGrid({ url:'file_ajax.php' });
  * agung@transformatika.com
  */
 $.fn.TransGrid = function(options){
@@ -215,27 +214,27 @@ $.fn.TransGrid = function(options){
                                                         }else if(vvv == 'int' || vvv == 'bigint'){
                                                             respon += '<input class="integerInput" type="text" name="'+vk+'" style="width:98%;" value="'+values+'">';
                                                         }else if(vvv =='radio'){
-                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="y"';
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
                                                             if(values == 'y'){
                                                                 respon += ' checked="checked"'
                                                             }    
-                                                            respon += '> Active&nbsp;</label>';
-                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="n"';
+                                                            respon += '> Active&nbsp;';
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
                                                             if(values == 'n'){
                                                                 respon += ' checked="checked"'
                                                             } 
-                                                            respon += '> Not Active</label>';
+                                                            respon += '> Not Active';
                                                         }else if(vvv =='yesno'){
-                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="y"';
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="y"';
                                                             if(values == 'y'){
                                                                 respon += ' checked="checked"'
                                                             }    
-                                                            respon += '> Yes&nbsp;</label>';
-                                                            respon += '<label><input type="radio" name="'+editId+'_'+vk+'" value="n"';
+                                                            respon += '> Yes&nbsp;';
+                                                            respon += '<input type="radio" name="'+editId+'_'+vk+'" value="n"';
                                                             if(values == 'n'){
                                                                 respon += ' checked="checked"'
                                                             } 
-                                                            respon += '> No</label>';
+                                                            respon += '> No';
                                                         }else if(vvv == 'selectYear'){
                                                             var currentTime = new Date()
                                                             var year = currentTime.getFullYear()
@@ -400,8 +399,8 @@ $.fn.TransGrid = function(options){
                             }else if(vvv == 'int' || vvv == 'bigint'){
                                 appends += '<td><input class="integerInput" type="text" name="'+vk+'" style="width:98%;"></td>';
                             }else if(vvv =='radio'){
-                                appends += '<td><label><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;</label>';
-                                appends += '<label><input type="radio" name="'+vk+'" value="n"> Not Active</label></td>';
+                                appends += '<td><input type="radio" name="'+vk+'" value="y" checked="checked"> Active&nbsp;';
+                                appends += '<input type="radio" name="'+vk+'" value="n"> Not Active</td>';
                             }else if(vvv == 'selectYear'){
                                 var currentTime = new Date()
                                 var year = currentTime.getFullYear()

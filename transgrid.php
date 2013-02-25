@@ -1,6 +1,6 @@
 <?php
 Class TransGrid {
-    var $base_url   = 'http://localhost/qshe/';
+    var $base_url   = '';
     var $path       = 'libs/TransGrid/';
     var $CONF       = array();
     function __construct() {
@@ -52,14 +52,20 @@ Class TransGrid {
             $total_data = $T->dbCount($this->CONF['table']);
         }else{
             $total_data = $T->dbCount($this->CONF['table'],' WHERE '.$this->CONF['status_field'].' != \'d\'');
-        }
+        }    
         if(empty($this->CONF['order_field']) || $this->CONF['order_field'] == ''){
             $order_field = '""';
         }else{
             $order_field = '"'.$this->CONF['order_field'].'"';
         }
         if(is_array($this->CONF['field']) && count($this->CONF['field']) > 0){
-            $fields = implode(',',$this->CONF['field']);
+        	if(!in_array($this->CONF['primary_key'],$this->CONF['field'])){
+        		$fields = $this->CONF['primary_key'].',';
+        		$fields .= implode(',',$this->CONF['field']);
+        	}else{
+        		$fields = implode(',',$this->CONF['field']);
+        	}
+            
         }else{
             $list = array();
             $res = $T->dbQuery('SELECT column_name, data_type, character_maximum_length,is_nullable FROM information_schema.columns WHERE table_name = \''.$this->CONF['table'].'\'  ORDER BY table_schema, table_name');
