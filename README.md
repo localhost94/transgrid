@@ -1,4 +1,4 @@
-<?php
+<code>
 include 'path/to/TransGrid/transgrid.php';
 $Grid = new TransGrid();
 
@@ -15,3 +15,4 @@ $CONF['title']          = 'Title Name';
 $CONF['sortable']       = true;
 $CONF['order_field']    = 'orderby';
 echo $Grid->CreateGrid($CONF);
+</code>
