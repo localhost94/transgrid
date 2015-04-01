@@ -1,4 +1,6 @@
+# How to Use
 ```
+include 'path/to/databaseconnection.php';
 include 'path/to/TransGrid/transgrid.php';
 $Grid = new TransGrid();
 $CONF['table']          = 'tablename';
